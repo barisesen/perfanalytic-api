@@ -15,5 +15,8 @@
         "sourceType": "module"
     },
     "rules": {
+        "arrow-parens": 0,
+        "no-console": 0,
+        "arrow-body-style": 0
     }
 }
