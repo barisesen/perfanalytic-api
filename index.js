@@ -1,8 +1,18 @@
+const mongoose = require('mongoose');
 const fastify = require('fastify')({ logger: true });
 const metricController = require('./controllers/metric');
 
-fastify.get('/', metricController.show);
-fastify.post('/', metricController.store);
+const DB_CONNECTION = 'mongodb://root:root@localhost:27017/analytic?serverSelectionTimeoutMS=5000&connectTimeoutMS=10000&authSource=admin&authMechanism=SCRAM-SHA-256&3t.uriVersion=3&3t.connection.name=Mongo';
+const mongoDB = DB_CONNECTION || process.env.MONGODB_URI;
+mongoose.connect(mongoDB);
+mongoose.Promise = global.Promise;
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+
+
+fastify.get('/metrics', metricController.show);
+fastify.post('/metrics', metricController.store);
+
 
 // Run the server!
 const start = async () => {
