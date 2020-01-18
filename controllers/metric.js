@@ -8,24 +8,28 @@ module.exports.show = (request, reply) => {
         fcp: 6463,
         dom_load: 32783,
         window_load: 87775,
+        created_at: new Date(),
       },
       {
         ttfb: 326623,
         fcp: 3112,
         dom_load: 3233,
         window_load: 213,
+        created_at: new Date(new Date() - 1000),
       },
       {
         ttfb: 12313,
         fcp: 4123,
         dom_load: 1234,
         window_load: 3124123,
+        created_at: new Date(new Date() - 2000),
       },
       {
         ttfb: 7266,
         fcp: 23678,
         dom_load: 171273,
         window_load: 48382,
+        created_at: new Date(new Date() - 3000),
       },
     ],
   );

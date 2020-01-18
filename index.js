@@ -9,6 +9,9 @@ mongoose.Promise = global.Promise;
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
+fastify.register(require('fastify-cors'), {
+  origin: ['http://localhost:3001'],
+});
 
 fastify.get('/metrics', metricController.show);
 fastify.post('/metrics', metricController.store);
