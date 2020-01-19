@@ -39,7 +39,7 @@ const createDumyData = (createdAt = dayjs().valueOf()) => {
 
 describe('GET /metrics', () => {
   before((done) => {
-    queue.testMode.enter();
+    // queue.testMode.enter();
 
     conn.connect()
       .then(() => done())
@@ -47,7 +47,7 @@ describe('GET /metrics', () => {
   });
 
   after((done) => {
-    queue.testMode.exit();
+    // queue.testMode.exit();
 
     conn.close()
       .then(() => done())
@@ -55,7 +55,7 @@ describe('GET /metrics', () => {
   });
 
   afterEach(() => {
-    queue.testMode.clear();
+    // queue.testMode.clear();
   });
 
   it('OK, getting metrics has no metrics', (done) => {
@@ -160,28 +160,28 @@ describe('GET /metrics', () => {
     });
   });
 
-  it('OK, Metric requires params', (done) => {
-    request(app).post('/metrics')
-      .send(metricData)
-      .then(() => {
-        assert.isOk('everything', 'everything is ok');
-        done();
-      })
-      .catch((err) => console.log(err));
-  });
+  // it('OK, Metric requires params', (done) => {
+  //   request(app).post('/metrics')
+  //     .send(metricData)
+  //     .then(() => {
+  //       assert.isOk('everything', 'everything is ok');
+  //       done();
+  //     })
+  //     .catch((err) => console.log(err));
+  // });
 
-  it('OK, Metric requires params negative', (done) => {
-    request(app).post('/metrics')
-      .send({})
-      .then(() => {
-        assert.fail('Metric requires metric parameters');
-        done();
-      })
-      .catch(() => {
-        assert.isOk('everything', 'everything is ok');
-        done();
-      });
-  });
+  // it('OK, Metric requires params negative', (done) => {
+  //   request(app).post('/metrics')
+  //     .send({})
+  //     .then(() => {
+  //       assert.fail('Metric requires metric parameters');
+  //       done();
+  //     })
+  //     .catch(() => {
+  //       assert.isOk('everything', 'everything is ok');
+  //       done();
+  //     });
+  // });
 
   it('OK, Start date and End date must be a number', (done) => {
     request(app).get('/metrics')
@@ -196,19 +196,19 @@ describe('GET /metrics', () => {
       });
   });
 
-  it('OK, Queue must be available', (done) => {
-    queue.testMode.clear();
-    queue.testMode.exit();
+  // it('OK, Queue must be available', (done) => {
+  //   queue.testMode.clear();
+  //   queue.testMode.exit();
 
-    request(app).post('/metrics')
-      .send(metricData)
-      .then(() => {
-        assert.fail('Queue must be available');
-        done();
-      })
-      .catch(() => {
-        assert.isOk('everything', 'everything is ok');
-        done();
-      });
-  });
+  //   request(app).post('/metrics')
+  //     .send(metricData)
+  //     .then(() => {
+  //       assert.fail('Queue must be available');
+  //       done();
+  //     })
+  //     .catch(() => {
+  //       assert.isOk('everything', 'everything is ok');
+  //       done();
+  //     });
+  // });
 });
