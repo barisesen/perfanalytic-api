@@ -1,52 +1,51 @@
 const dayjs = require('dayjs');
 const Metric = require('../models/metric');
 
-module.exports.show = async (request, reply) => {
+module.exports.show = (request, res) => {
   const lastThirtyMin = dayjs().subtract(30, 'minute').valueOf();
+  const { start_date: startDate, end_date: endDate } = request.query;
 
   let query = {
     created_at: { $gte: lastThirtyMin },
   };
 
-  if (request.query.start_date && request.query.end_date) {
+  if (startDate && endDate) {
     query = {
-      created_at: { $gte: request.query.start_date, $lte: request.query.end_date },
+      created_at: { $gte: startDate, $lte: endDate },
     };
   }
 
-  await Metric.find(query, (err, doc) => {
+  Metric.find(query, (err, doc) => {
     if (err) {
-      console.error(err);
-      return reply.code(500).send();
+      res.status(500).send(err);
     }
 
-    return reply.code(200).send(doc);
+    res.status(200).send(doc);
   });
 };
 
-module.exports.store = (request, reply) => {
-  console.log(request);
-  let params = request.body;
-  if (typeof request.body === 'string') {
-    params = JSON.parse(request.body);
-  }
+module.exports.store = (request, res) => {
+  const {
+    ttfb, fcp, dom_load: domLoad, window_load: windowLoad,
+  } = request.body;
 
   const metric = new Metric(
     {
       host: request.hostname,
-      referer: request.headers.referer,
-      ttfb: params.ttfb,
-      fcp: params.fcp,
-      dom_load: params.dom_load,
-      window_load: params.window_load,
+      referer: request.headers.referer || request.hostname,
+      ttfb,
+      fcp,
+      dom_load: domLoad,
+      window_load: windowLoad,
       created_at: dayjs().valueOf(),
     },
   );
 
   metric.save((err) => {
     if (err) {
-      // console.log(err);
+      res.status(400);
     }
   });
-  return reply.code(200).send();
+
+  res.status(200).send();
 };
