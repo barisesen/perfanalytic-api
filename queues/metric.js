@@ -21,7 +21,6 @@ const create = (data, done) => {
   const {
     ttfb, fcp, domLoad, windowLoad, host, referer,
   } = data;
-  console.log(ttfb);
   const metric = new Metric(
     {
       host,
@@ -34,8 +33,8 @@ const create = (data, done) => {
     },
   );
 
-  metric.save((doc, err) => {
-    console.log(doc, err);
+  metric.save((err) => {
+    if (err) console.log(err);
   });
   done();
 };
