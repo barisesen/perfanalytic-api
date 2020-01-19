@@ -8,7 +8,7 @@ if (process.env.NODE_ENV === 'test') {
   q = kue.createQueue();
 } else {
   q = kue.createQueue({
-    redis: process.env.REDIS_URL || 'redis://localhost:6379',
+    redis: process.env.REDIS_URL || 'redis://redis:6379',
   });
 }
 
