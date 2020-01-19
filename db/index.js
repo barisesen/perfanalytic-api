@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const DB_URI = 'mongodb://mongo:27017/analytic';
+const DB_URI = process.env.DB_URL || 'mongodb://mongo:27017/analytic';
 
 function connect() {
   return new Promise((resolve, reject) => {

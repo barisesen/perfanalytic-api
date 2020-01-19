@@ -8,11 +8,7 @@ if (process.env.NODE_ENV === 'test') {
   q = kue.createQueue();
 } else {
   q = kue.createQueue({
-    prefix: 'q',
-    redis: {
-      port: 6379,
-      host: 'redis',
-    },
+    redis: process.env.REDIS_URL || 'redis://localhost:6379',
   });
 }
 

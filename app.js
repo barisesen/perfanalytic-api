@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const Joi = require('joi');
+
 const expressJoi = require('express-joi-validator');
 
 const { show, store } = require('./controllers/metric');
