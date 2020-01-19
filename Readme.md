@@ -8,7 +8,7 @@ Demo Dashboard Url: https://perfanalytic-dashboard.herokuapp.com/
 The application takes performance data from the browser and processes it. It shows the data it processes in the management panel.
 
 
-Client application that sends to API using performance api: [client]()
+Client application that sends to API using performance api: [client](https://perfanalytic.herokuapp.com/PerfAnalytics.js)
 
 React application visualizing the data: [Dashboard](https://github.com/barisesen/perfanalytic-dashboard)
 
