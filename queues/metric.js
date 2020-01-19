@@ -3,13 +3,19 @@ const dayjs = require('dayjs');
 
 const Metric = require('../models/metric');
 
-const q = kue.createQueue({
-  prefix: 'q',
-  redis: {
-    port: 6379,
-    host: '127.0.0.1',
-  },
-});
+let q = null;
+if (process.env.NODE_ENV === 'test') {
+  q = kue.createQueue();
+} else {
+  q = kue.createQueue({
+    prefix: 'q',
+    redis: {
+      port: 6379,
+      host: 'redis',
+    },
+  });
+}
+
 
 const create = (data, done) => {
   const {

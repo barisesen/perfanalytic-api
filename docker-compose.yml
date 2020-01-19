@@ -1,0 +1,40 @@
+version: "3"
+services:
+  app:
+    container_name: app
+    restart: always
+    build: ./
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+    links:
+      - mongo
+      - redis
+    depends_on:
+      - mongo
+      - redis 
+    environment:
+      WAIT_HOSTS: mongo:27017
+  mongo:
+    container_name: mongo
+    image: mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - ./data/mongo_data:/data/db
+  redis:
+    container_name: redis
+    image: 'bitnami/redis:5.0'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+    ports:
+      - '6379:6379'
+    volumes:
+      - './data/redis_data:/bitnami/redis/data'
+volumes: 
+  mongo:
+    driver: local
+  redis:
+    driver: local

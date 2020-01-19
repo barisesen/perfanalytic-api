@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const DB_URI = 'mongodb://root:root@localhost:27017/analytic?serverSelectionTimeoutMS=5000&connectTimeoutMS=10000&authSource=admin&authMechanism=SCRAM-SHA-256&3t.uriVersion=3&3t.connection.name=Mongo';
+const DB_URI = 'mongodb://mongo:27017/analytic';
 
 function connect() {
   return new Promise((resolve, reject) => {
