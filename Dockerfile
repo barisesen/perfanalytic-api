@@ -2,7 +2,7 @@ FROM node:10
 RUN apt update && apt install -y netcat
 WORKDIR /app
 COPY package.json package.json
-RUN npm install
+RUN yarn
 COPY . .
 EXPOSE 3000
 ## THE LIFE SAVER
