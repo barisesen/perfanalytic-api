@@ -41,3 +41,4 @@ npx loadtest -c 10 --rps 200 --data '{"ttfb": 1,"fcp": 1,"dom_load": 3,"window_l
 ```
 ## TODO
 * Grouping incoming performance data in minutes.
+* API Documentation.
