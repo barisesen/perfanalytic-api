@@ -22,6 +22,7 @@ const schema = {
 
 app.get('/metrics', show);
 app.post('/metrics', expressJoi(schema), store);
+app.use(express.static('client'));
 
 // error handler
 app.use((err, req, res) => {
