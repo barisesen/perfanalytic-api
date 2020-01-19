@@ -3,6 +3,7 @@ process.env.NODE_ENV = 'test';
 const chai = require('chai');
 const request = require('supertest');
 const dayjs = require('dayjs');
+const queue = require('kue').createQueue();
 
 const app = require('./../../app.js');
 const conn = require('./../../db/index.js');
@@ -13,24 +14,48 @@ chai.use(require('chai-things')); // Don't swap these two
 
 const { expect, assert } = chai;
 
-const metric = {
+const metricData = {
   ttfb: 1,
   fcp: 1,
   dom_load: 1,
   window_load: 1,
 };
 
+const createDumyData = (createdAt = dayjs().valueOf()) => {
+  const dumy = new Metric(
+    {
+      host: 'https://test.test',
+      referer: 'https://test.test/test',
+      ttfb: 1,
+      fcp: 1,
+      dom_load: 1,
+      window_load: 1,
+      created_at: createdAt,
+    },
+  );
+
+  dumy.save();
+};
+
 describe('GET /metrics', () => {
   before((done) => {
+    queue.testMode.enter();
+
     conn.connect()
       .then(() => done())
       .catch((err) => done(err));
   });
 
   after((done) => {
+    queue.testMode.exit();
+
     conn.close()
       .then(() => done())
       .catch((err) => done(err));
+  });
+
+  afterEach(() => {
+    queue.testMode.clear();
   });
 
   it('OK, getting metrics has no metrics', (done) => {
@@ -40,35 +65,33 @@ describe('GET /metrics', () => {
         expect(body.length).to.equal(0);
         done();
       })
-      .catch((err) => done(err));
+      .catch((err) => console.log(err));
   });
 
   it('OK, getting metrics has 1 metric', (done) => {
-    request(app).post('/metrics')
-      .send(metric)
-      .then(() => {
-        request(app).get('/metrics')
-          .then((res) => {
-            const { body } = res;
-            expect(body.length).to.equal(1);
-            done();
-          });
-      })
-      .catch((err) => done(err));
+    createDumyData();
+    request(app).get('/metrics')
+      .then((res) => {
+        const { body } = res;
+        expect(body.length).to.equal(1);
+        done();
+      });
   });
 
   it('OK, metrics must include the metric parameters', (done) => {
-    request(app).post('/metrics')
-      .send(metric)
-      .then(() => {
-        request(app).get('/metrics')
-          .then((res) => {
-            const { body } = res;
-            expect(body).to.be.an('array').that.contains.something.like(metric);
-            done();
-          });
-      })
-      .catch((err) => done(err));
+    // createDumyData();
+    request(app).get('/metrics')
+      .then((res) => {
+        const { body } = res;
+        const metricResponse = body[0];
+        assert.isAtMost(metricResponse.ttfb, metricData.ttfb);
+        assert.isAtMost(metricResponse.fcp, metricData.fcp);
+        assert.isAtMost(metricResponse.window_load, metricData.window_load);
+        assert.isAtMost(metricResponse.dom_load, metricData.dom_load);
+
+        expect(body).to.be.an('array').that.contains.something.like(metricData);
+        done();
+      });
   });
 
   it('OK, If there is no filter, list the last 30 minutes of metrics.', (done) => {
@@ -97,7 +120,7 @@ describe('GET /metrics', () => {
           body.map(x => assert.isAtLeast(x.created_at, lastThirtyMin, 'Created At greater or equal lastThirtyMin'));
           done();
         })
-        .catch((err) => done(err));
+        .catch((err) => console.log(err));
     });
   });
 
@@ -133,11 +156,21 @@ describe('GET /metrics', () => {
           });
           done();
         })
-        .catch((err) => done(err));
+        .catch((err) => console.log(err));
     });
   });
 
   it('OK, Metric requires params', (done) => {
+    request(app).post('/metrics')
+      .send(metricData)
+      .then(() => {
+        assert.isOk('everything', 'everything is ok');
+        done();
+      })
+      .catch((err) => console.log(err));
+  });
+
+  it('OK, Metric requires params negative', (done) => {
     request(app).post('/metrics')
       .send({})
       .then(() => {
@@ -155,6 +188,22 @@ describe('GET /metrics', () => {
       .query({ start_date: 'test', end_date: 'test' })
       .then(() => {
         assert.fail('query should return an error');
+        done();
+      })
+      .catch(() => {
+        assert.isOk('everything', 'everything is ok');
+        done();
+      });
+  });
+
+  it('OK, Queue must be available', (done) => {
+    queue.testMode.clear();
+    queue.testMode.exit();
+
+    request(app).post('/metrics')
+      .send(metricData)
+      .then(() => {
+        assert.fail('Queue must be available');
         done();
       })
       .catch(() => {

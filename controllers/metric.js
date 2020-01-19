@@ -1,5 +1,7 @@
 const dayjs = require('dayjs');
+
 const Metric = require('../models/metric');
+const q = require('../queues/metric');
 
 module.exports.show = (request, res) => {
   const lastThirtyMin = dayjs().subtract(30, 'minute').valueOf();
@@ -25,26 +27,18 @@ module.exports.show = (request, res) => {
 };
 
 module.exports.store = (request, res) => {
-  const {
-    ttfb, fcp, dom_load: domLoad, window_load: windowLoad,
-  } = request.body;
+  const { body } = request;
+  const data = {
+    ttfb: body.ttfb,
+    fcp: body.fcp,
+    domLoad: body.dom_load,
+    windowLoad: body.window_load,
+    host: request.hostname,
+    referer: (request.headers.referer || request.hostname),
+  };
 
-  const metric = new Metric(
-    {
-      host: request.hostname,
-      referer: request.headers.referer || request.hostname,
-      ttfb,
-      fcp,
-      dom_load: domLoad,
-      window_load: windowLoad,
-      created_at: dayjs().valueOf(),
-    },
-  );
-
-  metric.save((err) => {
-    if (err) {
-      res.status(400);
-    }
+  q.create('metric-store', data).events(false).save((err) => {
+    if (err) res.status(400);
   });
 
   res.status(200).send();
