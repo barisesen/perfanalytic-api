@@ -2,7 +2,7 @@
 <p align="center"><a href="#" target="_blank" rel="noopener noreferrer">
 <img width="550" src="https://github.com/barisesen/perfanalytic-api/raw/master/doc/logo.png"></a></p>
 
-Demo Api Url: https://perfanalytic.herokuapp.com/
+Demo Api Url: https://perfanalytic.herokuapp.com/metrics
 
 Demo Dashboard Url: https://perfanalytic-dashboard.herokuapp.com/
 
